@@ -1,0 +1,2 @@
+export const CREDENTIALS_MODEL: string = "CREDENTIALS_MODEL";
+export const CREDENTIALS_STORAGE: string = "CREDENTIALS_STORAGE";
