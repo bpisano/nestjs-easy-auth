@@ -7,7 +7,7 @@ export interface UserService<User extends AnyUserRepresentation> {
   getWith(params: any): PromiseOptional<User>;
   create(user: Partial<DatabaseModelOf<User>>): Promise<User>;
   updateWithId(id: string, user: Partial<DatabaseModelOf<User>>): Promise<User>;
-  updteWith(params: any, user: Partial<DatabaseModelOf<User>>): Promise<User>;
+  updateWith(params: any, user: Partial<DatabaseModelOf<User>>): Promise<User>;
   deleteWithId(id: string): Promise<void>;
   deleteWith(params: any): Promise<void>;
 }

@@ -1,7 +1,19 @@
-import { Injectable } from "@nestjs/common";
+import { Inject, Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
-import { Model } from "mongoose";
-import { MONGO_USER_MODEL } from "../../mongoConfig/modules/mongoConfig.moduleKeys";
+import { Model, Types } from "mongoose";
+import {
+  CreateOne,
+  DeleteMany,
+  DeleteOne,
+  FindOne,
+  MongoDB,
+  MongoDBQuery,
+  UpdateOne,
+} from "monkey-db";
+import {
+  MONGO_DB,
+  MONGO_USER_MODEL,
+} from "../../mongoConfig/modules/mongoConfig.moduleKeys";
 import { AnyUserRepresentation } from "../../user/models/types/anyUserRepresentation";
 import { DatabaseModelOf } from "../../utils/types/databaseModelOf";
 import { PromiseOptional } from "../../utils/types/promiseOptional";
@@ -14,42 +26,61 @@ export class MongoUserStorage<User extends AnyUserRepresentation>
   public constructor(
     @InjectModel(MONGO_USER_MODEL)
     private readonly model: Model<DatabaseModelOf<User>>,
+    @Inject(MONGO_DB) private readonly db: MongoDB,
   ) {}
 
-  public async getWithId(_id: string): PromiseOptional<DatabaseModelOf<User>> {
-    console.log(this.model);
-    throw new Error("Method not implemented.");
+  public async getWithId(id: string): PromiseOptional<DatabaseModelOf<User>> {
+    if (!Types.ObjectId.isValid(id)) {
+      return undefined;
+    }
+    return this.db.perform(
+      MongoDBQuery.withModel(this.model).modifier(FindOne.withId(id)),
+    );
   }
 
-  public async getWith(_params: any): PromiseOptional<DatabaseModelOf<User>> {
-    throw new Error("Method not implemented.");
+  public async getWith(params: any): PromiseOptional<DatabaseModelOf<User>> {
+    return this.db.perform(
+      MongoDBQuery.withModel(this.model).modifier(FindOne.where(params)),
+    );
   }
 
   public async create(
-    _user: Partial<DatabaseModelOf<User>>,
+    user: Partial<DatabaseModelOf<User>>,
   ): Promise<DatabaseModelOf<User>> {
-    throw new Error("Method not implemented.");
+    return this.db.perform(
+      MongoDBQuery.withModel(this.model).modifier(CreateOne.withData(user)),
+    );
   }
 
   public async updateWithId(
-    _id: string,
-    _user: Partial<DatabaseModelOf<User>>,
+    id: string,
+    user: Partial<DatabaseModelOf<User>>,
   ): Promise<DatabaseModelOf<User>> {
-    throw new Error("Method not implemented.");
+    return this.db.perform(
+      MongoDBQuery.withModel(this.model).modifier(UpdateOne.withId(id, user)),
+    );
   }
 
-  public async updteWith(
-    _params: any,
-    _user: Partial<DatabaseModelOf<User>>,
+  public async updateWith(
+    params: any,
+    user: Partial<DatabaseModelOf<User>>,
   ): Promise<DatabaseModelOf<User>> {
-    throw new Error("Method not implemented.");
+    return this.db.perform(
+      MongoDBQuery.withModel(this.model).modifier(
+        UpdateOne.where(params, user),
+      ),
+    );
   }
 
-  public async deleteWithId(_id: string): Promise<void> {
-    throw new Error("Method not implemented.");
+  public async deleteWithId(id: string): Promise<void> {
+    await this.db.perform(
+      MongoDBQuery.withModel(this.model).modifier(DeleteOne.withId(id)),
+    );
   }
 
-  public async deleteWith(_params: any): Promise<void> {
-    throw new Error("Method not implemented.");
+  public async deleteWith(params: any): Promise<void> {
+    await this.db.perform(
+      MongoDBQuery.withModel(this.model).modifier(DeleteMany.where(params)),
+    );
   }
 }

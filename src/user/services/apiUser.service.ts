@@ -12,7 +12,7 @@ export class ApiUserService<User extends AnyUserRepresentation>
   implements UserService<User>
 {
   public constructor(
-    @Inject(USER_STORAGE) private readonly storage: UserStorage<User>
+    @Inject(USER_STORAGE) private readonly storage: UserStorage<User>,
   ) {}
 
   public async getWithId(id: string): PromiseOptional<User> {
@@ -22,9 +22,8 @@ export class ApiUserService<User extends AnyUserRepresentation>
   }
 
   public async getWith(params: any): PromiseOptional<User> {
-    const dbUser: Optional<DatabaseModelOf<User>> = await this.storage.getWith(
-      params
-    );
+    const dbUser: Optional<DatabaseModelOf<User>> =
+      await this.storage.getWith(params);
     return dbUser?.toAppModel();
   }
 
@@ -35,22 +34,22 @@ export class ApiUserService<User extends AnyUserRepresentation>
 
   public async updateWithId(
     id: string,
-    user: Partial<DatabaseModelOf<User>>
+    user: Partial<DatabaseModelOf<User>>,
   ): Promise<User> {
     const dbUser: DatabaseModelOf<User> = await this.storage.updateWithId(
       id,
-      user
+      user,
     );
     return dbUser.toAppModel();
   }
 
-  public async updteWith(
+  public async updateWith(
     params: any,
-    user: Partial<DatabaseModelOf<User>>
+    user: Partial<DatabaseModelOf<User>>,
   ): Promise<User> {
-    const dbUser: DatabaseModelOf<User> = await this.storage.updteWith(
+    const dbUser: DatabaseModelOf<User> = await this.storage.updateWith(
       params,
-      user
+      user,
     );
     return dbUser.toAppModel();
   }

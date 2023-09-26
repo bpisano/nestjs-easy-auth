@@ -1,5 +1,5 @@
 import { ConflictException } from "@nestjs/common";
-import bcrypt from "bcrypt";
+import * as bcrypt from "bcrypt";
 import { AnyUserRepresentation } from "../../user/models/types/anyUserRepresentation";
 import { UserService } from "../../user/services/user.service";
 import { DatabaseModelOf } from "../../utils/types/databaseModelOf";

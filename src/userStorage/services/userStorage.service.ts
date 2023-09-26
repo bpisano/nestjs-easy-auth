@@ -8,11 +8,11 @@ export interface UserStorage<User extends AnyUserRepresentation> {
   create(user: Partial<DatabaseModelOf<User>>): Promise<DatabaseModelOf<User>>;
   updateWithId(
     id: string,
-    user: Partial<DatabaseModelOf<User>>
+    user: Partial<DatabaseModelOf<User>>,
   ): Promise<DatabaseModelOf<User>>;
-  updteWith(
+  updateWith(
     params: any,
-    user: Partial<DatabaseModelOf<User>>
+    user: Partial<DatabaseModelOf<User>>,
   ): Promise<DatabaseModelOf<User>>;
   deleteWithId(id: string): Promise<void>;
   deleteWith(params: any): Promise<void>;
