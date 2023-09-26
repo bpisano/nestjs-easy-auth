@@ -1,4 +1,4 @@
-import { sub } from "date-fns";
+import { add } from "date-fns";
 import { Optional } from "../types/optional";
 
 export function parseDayString(dayString: string): Optional<Date> {
@@ -6,10 +6,10 @@ export function parseDayString(dayString: string): Optional<Date> {
   const unit: string = dayString.charAt(dayString.length - 1).toLowerCase();
 
   const unitMap: Record<string, string> = {
-    d: "Date",
-    h: "Hours",
-    m: "Minutes",
-    s: "Seconds",
+    d: "days",
+    h: "hours",
+    m: "minutes",
+    s: "seconds",
   };
 
   // eslint-disable-next-line no-prototype-builtins
@@ -19,8 +19,7 @@ export function parseDayString(dayString: string): Optional<Date> {
   }
 
   const durationUnit: string = unitMap[unit];
-  const durationValue: number = numericValue * -1; // Negative value to subtract duration
 
-  const resultDate: Date = sub(new Date(), { [durationUnit]: durationValue });
+  const resultDate: Date = add(new Date(), { [durationUnit]: numericValue });
   return resultDate;
 }

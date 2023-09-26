@@ -1,5 +1,7 @@
 import { Inject } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
+import { parseDayString } from "../../utils/date/parseDayString";
+import { Optional } from "../../utils/types/optional";
 import { TokenType } from "../models/enums/tokenType";
 import { JWTConfig } from "../models/types/jwtConfig";
 import { JWT_CONFIG } from "../modules/jwt.moduleKeys";
@@ -12,12 +14,27 @@ export class ApiJwtService implements JWTService {
   ) {}
 
   public tokenExpirationDate(tokenType: TokenType): Date {
-    const now = new Date();
     switch (tokenType) {
       case TokenType.access:
-        return new Date(now.getTime() + this.config.accessTokenExpiresIn);
+        const accessTokenExpirationDate: Optional<Date> = parseDayString(
+          this.config.accessTokenExpiresIn,
+        );
+        if (!accessTokenExpirationDate) {
+          throw new Error(
+            `${this.config.accessTokenExpiresIn} is not a valid access tokeb date string.`,
+          );
+        }
+        return accessTokenExpirationDate;
       case TokenType.refresh:
-        return new Date(now.getTime() + this.config.refreshTokenExpiresIn);
+        const refreshTokenExpirationDate: Optional<Date> = parseDayString(
+          this.config.refreshTokenExpiresIn,
+        );
+        if (!refreshTokenExpirationDate) {
+          throw new Error(
+            `${this.config.refreshTokenExpiresIn} is not a valid refresh tokeb date string.`,
+          );
+        }
+        return refreshTokenExpirationDate;
       default:
         throw new Error("Invalid token type");
     }

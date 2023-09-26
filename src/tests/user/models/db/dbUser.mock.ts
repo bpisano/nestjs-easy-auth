@@ -10,7 +10,7 @@ export class DBUserMock {
   @Prop()
   public readonly hashedPassword?: string;
 
-  public toApiModel: () => UserMock;
+  public toAppModel: () => UserMock;
 }
 
 export type DBUserDocumentMock = HydratedDocument<DBUserMock>;
@@ -18,6 +18,6 @@ export type DBUserDocumentMock = HydratedDocument<DBUserMock>;
 export const DBUserSchemaMock: MongooseSchema<DBUserDocumentMock> =
   SchemaFactory.createForClass(DBUserMock);
 
-DBUserSchemaMock.methods.toApiModel = function (): UserMock {
+DBUserSchemaMock.methods.toAppModel = function (): UserMock {
   return new UserMock(this._id, this.email, this.hashedPassword);
 };
