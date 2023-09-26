@@ -10,6 +10,9 @@ export class DBCredentials {
   public readonly userId: string;
 
   @Prop()
+  public readonly authType: string;
+
+  @Prop()
   public readonly accessToken: string;
 
   @Prop()
@@ -32,9 +35,10 @@ export const DBCredentialsSchemaMock: MongooseSchema<DBCredentialsDocumentMock> 
 DBCredentialsSchemaMock.methods.toApiModel = function (): CredentialsMock {
   return new CredentialsMock(
     this.userId,
+    this.authType,
     this.accessToken,
     this.refreshToken,
     this.accessTokenExpiration,
-    this.refreshTokenExpiration
+    this.refreshTokenExpiration,
   );
 };

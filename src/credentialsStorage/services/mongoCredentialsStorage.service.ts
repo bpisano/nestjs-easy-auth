@@ -1,34 +1,34 @@
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
 import { AnyCredentialsRepresentation } from "../../credentials/models/types/anyCredentialsRepresentation";
+import { MONGO_CREDENTIALS_MODEL } from "../../mongoConfig/modules/mongoConfig.moduleKeys";
 import { DatabaseModelOf } from "../../utils/types/databaseModelOf";
 import { PromiseOptional } from "../../utils/types/promiseOptional";
-import { CREDENTIALS_MODEL } from "../modules/credentialsStorage.moduleKeys";
 import { CredentialsStorage } from "./credentialsStorage.service";
 
 export class MongoCredentialsStorage<
-  Credentials extends AnyCredentialsRepresentation
+  Credentials extends AnyCredentialsRepresentation,
 > implements CredentialsStorage<Credentials>
 {
   public constructor(
-    @InjectModel(CREDENTIALS_MODEL)
-    private readonly model: Model<DatabaseModelOf<Credentials>>
+    @InjectModel(MONGO_CREDENTIALS_MODEL)
+    private readonly model: Model<DatabaseModelOf<Credentials>>,
   ) {}
 
   public async getWithAccessToken(
-    accessToken: string
+    _accessToken: string,
   ): PromiseOptional<DatabaseModelOf<Credentials>> {
     throw new Error("Method not implemented.");
   }
 
   public async getWithUserId(
-    userId: string
+    _userId: string,
   ): PromiseOptional<DatabaseModelOf<Credentials>> {
     throw new Error("Method not implemented.");
   }
 
   public async create(
-    credentials: Partial<DatabaseModelOf<Credentials>>
+    _credentials: Partial<DatabaseModelOf<Credentials>>,
   ): Promise<DatabaseModelOf<Credentials>> {
     throw new Error("Method not implemented.");
   }

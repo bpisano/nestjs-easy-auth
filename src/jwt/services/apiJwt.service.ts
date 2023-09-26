@@ -2,12 +2,13 @@ import { Inject } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import { TokenType } from "../models/enums/tokenType";
 import { JWTConfig } from "../models/types/jwtConfig";
+import { JWT_CONFIG } from "../modules/jwt.moduleKeys";
 import { JWTService } from "./jwt.service";
 
 export class ApiJwtService implements JWTService {
   public constructor(
     @Inject(JWT_CONFIG) public readonly config: JWTConfig,
-    private readonly jwtService: JwtService
+    private readonly jwtService: JwtService,
   ) {}
 
   public tokenExpirationDate(tokenType: TokenType): Date {

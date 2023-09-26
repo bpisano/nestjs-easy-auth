@@ -1,8 +1,12 @@
 import { INestApplication, ValidationPipe } from "@nestjs/common";
 import { Test, TestingModule } from "@nestjs/testing";
 import * as request from "supertest";
-import { SignInWithEmailAndPassword } from "../../authenticationMethods/signInWithEmailAndPassword/modules/signInWithEmailAndPassword.module";
-import { UserModule } from "../../user/modules/user.module";
+import { AuthModule } from "../../auth/modules/auth.module";
+import { MapCredentialsParams } from "../../auth/types/mapCredentialsParams";
+import {
+  SignInEmailPassword,
+  SignInEmailPasswordUserMapInput,
+} from "../../authenticator/signInEmailPassword/signInEmailPassword.authenticator";
 import { CredentialsMock } from "../credentials/models/app/credentials.mock";
 import { DBCredentialsSchemaMock } from "../credentials/models/db/dbCredentials.mock";
 import { TestMongooseModule } from "../memoryServer/modules/memoryServer.module";
@@ -10,26 +14,32 @@ import { MemoryServer } from "../memoryServer/services/memoryServer.service";
 import { UserMock } from "../user/models/app/user.mock";
 import { DBUserSchemaMock } from "../user/models/db/dbUser.mock";
 
-describe("SignInWithEmailAndPassword", () => {
+describe("SignInEmailPassword", () => {
   let app: INestApplication;
 
   async function setup(): Promise<void> {
     const rootModule: TestingModule = await Test.createTestingModule({
       imports: [
         TestMongooseModule,
-        UserModule.mongo({
+
+        AuthModule.mongo<CredentialsMock, UserMock>({
           mongoConfig: {
             dbName: "user-kit",
             uri: "mongodb://root:rootpassword@127.0.0.1:27017?authMechanism=DEFAULT",
+            userSchema: DBUserSchemaMock,
+            credentialsSchema: DBCredentialsSchemaMock,
           },
-          userSchema: DBUserSchemaMock,
-          credentialsSchema: DBCredentialsSchemaMock,
-          features: [
-            new SignInWithEmailAndPassword({
-              mapUser: (email: string, hashedPassword: string) =>
-                new UserMock(email, hashedPassword),
-              mapCredentials: (userId: string) =>
-                new CredentialsMock(userId, "", "", new Date(), new Date()),
+          jwtConfig: {
+            secret: "secret",
+            accessTokenExpiresIn: "1h",
+            refreshTokenExpiresIn: "1d",
+          },
+          mapCredentials: (params: MapCredentialsParams) =>
+            CredentialsMock.fromMapCredentials(params),
+          authMethods: [
+            new SignInEmailPassword({
+              mapUser: (input: SignInEmailPasswordUserMapInput) =>
+                UserMock.fromSignInEmailPassword(input),
             }),
           ],
         }),

@@ -5,6 +5,7 @@ import {
 
 export type CredentialsRepresentation<DatabaseModel, PublicModel> = {
   userId: string;
+  authType: string;
   accessToken: string;
   refreshToken: string;
   accessTokenExpiration: Date;

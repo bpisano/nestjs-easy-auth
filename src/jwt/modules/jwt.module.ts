@@ -2,6 +2,7 @@ import { DynamicModule, Module } from "@nestjs/common";
 import { JwtModule } from "@nestjs/jwt";
 import { JWTConfig } from "../models/types/jwtConfig";
 import { ApiJwtService } from "../services/apiJwt.service";
+import { JWT_CONFIG, JWT_SERVICE } from "./jwt.moduleKeys";
 
 @Module({})
 export class JWTModule {

@@ -1,6 +1,4 @@
 import { DynamicModule, Module, Type } from "@nestjs/common";
-import { AuthenticationFeature } from "../../authenticationMethods/authenticationFeature.service";
-import { CredentialsStorageModule } from "../../credentialsStorage/modules/credentialsStorage.module";
 import { MongoConfig } from "../../mongoConfig/models/types/mongoConfig";
 import { UserStorageModule } from "../../userStorage/modules/userStorage.module";
 import { UserStorage } from "../../userStorage/services/userStorage.service";
@@ -10,41 +8,22 @@ import { USER_SERVICE } from "./user.moduleKeys";
 
 @Module({})
 export class UserModule {
-  public static forRoot<User extends AnyUserRepresentation>(config: {
+  public static withConfig<User extends AnyUserRepresentation>(params: {
     storage: Type<UserStorage<User>>;
   }): DynamicModule {
     return {
       module: UserModule,
-      imports: [UserStorageModule.usingStorage(config.storage)],
+      imports: [UserStorageModule.usingStorage(params.storage)],
       providers: [{ provide: USER_SERVICE, useClass: ApiUserService }],
+      exports: [USER_SERVICE],
     };
   }
 
-  public static mongo(params: {
-    mongoConfig: MongoConfig;
-    userSchema: any;
-    credentialsSchema: any;
-    features: AuthenticationFeature[];
-  }): DynamicModule {
+  public static mongo(params: { config: MongoConfig }): DynamicModule {
     return {
       module: UserModule,
-      imports: [
-        CredentialsStorageModule.mongo({
-          config: params.mongoConfig,
-          schema: params.credentialsSchema,
-        }),
-        UserStorageModule.mongo({
-          config: params.mongoConfig,
-          schema: params.userSchema,
-        }),
-      ],
-      providers: [
-        { provide: USER_SERVICE, useClass: ApiUserService },
-        ...params.features.flatMap((feature) => feature.makeProviders()),
-      ],
-      controllers: params.features.flatMap((feature) =>
-        feature.makeControllers()
-      ),
+      imports: [UserStorageModule.mongo({ config: params.config })],
+      providers: [{ provide: USER_SERVICE, useClass: ApiUserService }],
       exports: [USER_SERVICE],
     };
   }
