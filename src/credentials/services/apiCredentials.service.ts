@@ -1,4 +1,5 @@
 import { Inject } from "@nestjs/common";
+import { MapCredentials } from "../../auth/types/mapCredentials";
 import { CREDENTIALS_STORAGE } from "../../credentialsStorage/modules/credentialsStorage.moduleKeys";
 import { CredentialsStorage } from "../../credentialsStorage/services/credentialsStorage.service";
 import { TokenType } from "../../jwt/models/enums/tokenType";
@@ -23,35 +24,44 @@ export class ApiCredentialsService<
   public async getWithAccessToken(
     accessToken: string,
   ): PromiseOptional<Credentials> {
+    return await this.getOneWith({ accessToken });
+  }
+
+  public async getWithRefreshToken(
+    refreshToken: string,
+  ): PromiseOptional<Credentials> {
+    return await this.getOneWith({ refreshToken });
+  }
+
+  public async getWithUserId(userId: string): Promise<Credentials[]> {
+    return await this.getManyWith({ userId });
+  }
+
+  public async getOneWith(params: any): PromiseOptional<Credentials> {
     const dbCredentials: Optional<DatabaseModelOf<Credentials>> =
-      await this.storage.getWithAccessToken(accessToken);
+      await this.storage.getOneWith(params);
     return dbCredentials?.toAppModel();
   }
 
-  public async getWithUserId(userId: string): PromiseOptional<Credentials> {
-    const dbCredentials: Optional<DatabaseModelOf<Credentials>> =
-      await this.storage.getWithUserId(userId);
-    return dbCredentials?.toAppModel();
+  public async getManyWith(params: any): Promise<Credentials[]> {
+    const dbCredentials: DatabaseModelOf<Credentials>[] =
+      await this.storage.getManyWith(params);
+    return dbCredentials.map((dbCredentials) => dbCredentials.toAppModel());
   }
 
   public async create(
     params: { userId: string; authType: string },
-    mapCredentials: (params: {
-      userId: string;
-      authType: string;
-      accessToken: string;
-      refreshToken: string;
-      accessTokenExpiration: Date;
-      refreshTokenExpiration: Date;
-    }) => Partial<DatabaseModelOf<Credentials>>,
+    mapCredentials: MapCredentials<Credentials>,
   ): Promise<Credentials> {
-    const accessToken: string = await this.jwtService.createAccessToken({
-      userId: params.userId,
-      authType: params.authType,
-    });
-    const refreshToken: string = await this.jwtService.createRefreshToken({
-      userId: params.userId,
-    });
+    const [accessToken, refreshToken] = await Promise.all([
+      this.jwtService.createAccessToken({
+        userId: params.userId,
+        authType: params.authType,
+      }),
+      this.jwtService.createRefreshToken({
+        userId: params.userId,
+      }),
+    ]);
     const accessTokenExpiration: Date = this.jwtService.tokenExpirationDate(
       TokenType.access,
     );
@@ -69,6 +79,10 @@ export class ApiCredentialsService<
           refreshTokenExpiration,
         }),
       );
-    return dbCredentials.toApiModel();
+    return dbCredentials.toAppModel();
+  }
+
+  public async deleteWithAccessToken(accessToken: string): Promise<void> {
+    await this.storage.deleteOneWith({ accessToken });
   }
 }

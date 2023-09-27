@@ -16,9 +16,7 @@ export class ApiUserService<User extends AnyUserRepresentation>
   ) {}
 
   public async getWithId(id: string): PromiseOptional<User> {
-    const dbUser: Optional<DatabaseModelOf<User>> =
-      await this.storage.getWithId(id);
-    return dbUser?.toAppModel();
+    return this.getWith({ _id: id });
   }
 
   public async getWith(params: any): PromiseOptional<User> {
@@ -36,11 +34,7 @@ export class ApiUserService<User extends AnyUserRepresentation>
     id: string,
     user: Partial<DatabaseModelOf<User>>,
   ): Promise<User> {
-    const dbUser: DatabaseModelOf<User> = await this.storage.updateWithId(
-      id,
-      user,
-    );
-    return dbUser.toAppModel();
+    return this.updateWith({ _id: id }, user);
   }
 
   public async updateWith(
@@ -55,7 +49,7 @@ export class ApiUserService<User extends AnyUserRepresentation>
   }
 
   public async deleteWithId(id: string): Promise<void> {
-    await this.storage.deleteWithId(id);
+    await this.deleteWith({ _id: id });
   }
 
   public async deleteWith(params: any): Promise<void> {

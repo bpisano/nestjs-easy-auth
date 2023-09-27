@@ -12,7 +12,9 @@ import { AnyCredentialsRepresentation } from "../../credentials/models/types/any
 import { CredentialsModule } from "../../credentials/modules/credentials.module";
 import { CREDENTIALS_SERVICE } from "../../credentials/modules/credentials.moduleKeys";
 import { CredentialsService } from "../../credentials/services/credentials.service";
+import { CredentialsRefreshModule } from "../../credentialsRefresh/modules/credentialsRefresh.module";
 import { JWTConfig } from "../../jwt/models/types/jwtConfig";
+import { JWTModule } from "../../jwt/modules/jwt.module";
 import { MongoConfig } from "../../mongoConfig/models/types/mongoConfig";
 import { Session } from "../../session/models/api/session";
 import { PublicSession } from "../../session/models/public/publicSession";
@@ -20,6 +22,8 @@ import { AnyUserRepresentation } from "../../user/models/types/anyUserRepresenta
 import { UserModule } from "../../user/modules/user.module";
 import { USER_SERVICE } from "../../user/modules/user.moduleKeys";
 import { UserService } from "../../user/services/user.service";
+import { Public } from "../decorators/public.decorator";
+import { JwtStrategy } from "../passport/jwt.strategy";
 import { MapCredentials } from "../types/mapCredentials";
 
 @Module({})
@@ -36,12 +40,19 @@ export class AuthModule {
     return {
       module: AuthModule,
       imports: [
+        JWTModule.withConfig(params.jwtConfig),
         UserModule.mongo({ config: params.mongoConfig }),
         CredentialsModule.mongo({
           config: params.mongoConfig,
           jwtConfig: params.jwtConfig,
         }),
+        CredentialsRefreshModule.mongo({
+          config: params.mongoConfig,
+          jwtConfig: params.jwtConfig,
+          mapCredentials: params.mapCredentials,
+        }),
       ],
+      providers: [JwtStrategy],
       controllers: params.authMethods.map(
         (authenticator: Authenticator<any, User>) =>
           this.createAuthenicatorController(
@@ -68,6 +79,7 @@ export class AuthModule {
         @Inject(USER_SERVICE) private readonly userSservice: UserService<User>,
       ) {}
 
+      @Public()
       @Post(authenticator.path)
       public async authenticate(
         @Body() input: Input,

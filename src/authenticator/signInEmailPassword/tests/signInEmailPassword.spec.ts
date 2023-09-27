@@ -1,39 +1,33 @@
 import { INestApplication, ValidationPipe } from "@nestjs/common";
 import { Test, TestingModule } from "@nestjs/testing";
 import * as request from "supertest";
-import { AuthModule } from "../../auth/modules/auth.module";
-import { MapCredentialsParams } from "../../auth/types/mapCredentialsParams";
+import { AuthModule } from "../../../auth/modules/auth.module";
+import { MapCredentialsParams } from "../../../auth/types/mapCredentialsParams";
+import { CredentialsMock } from "../../../tests/credentials/models/app/credentials.mock";
+import { jwtConfigMock } from "../../../tests/jwtConfig/jwtConfig.mock";
+import { TestMongooseModule } from "../../../tests/memoryServer/modules/memoryServer.module";
+import { MemoryServer } from "../../../tests/memoryServer/services/memoryServer.service";
+import { mongoConfigMock } from "../../../tests/mongoConfig/mongoConfig.mock";
+import { UserMock } from "../../../tests/user/models/app/user.mock";
+import { USER_SERVICE } from "../../../user/modules/user.moduleKeys";
+import { UserService } from "../../../user/services/user.service";
+import { Optional } from "../../../utils/types/optional";
 import {
   SignInEmailPassword,
   SignInEmailPasswordUserMapInput,
-} from "../../authenticator/signInEmailPassword/signInEmailPassword.authenticator";
-import { CredentialsMock } from "../credentials/models/app/credentials.mock";
-import { DBCredentialsSchemaMock } from "../credentials/models/db/dbCredentials.mock";
-import { TestMongooseModule } from "../memoryServer/modules/memoryServer.module";
-import { MemoryServer } from "../memoryServer/services/memoryServer.service";
-import { UserMock } from "../user/models/app/user.mock";
-import { DBUserSchemaMock } from "../user/models/db/dbUser.mock";
+} from "../signInEmailPassword.authenticator";
 
 describe("SignInEmailPassword", () => {
   let app: INestApplication;
+  let userService: UserService<UserMock>;
 
   async function setup(): Promise<void> {
     const rootModule: TestingModule = await Test.createTestingModule({
       imports: [
         TestMongooseModule,
-
         AuthModule.mongo<CredentialsMock, UserMock>({
-          mongoConfig: {
-            dbName: "user-kit",
-            uri: "mongodb://root:rootpassword@127.0.0.1:27017?authMechanism=DEFAULT",
-            userSchema: DBUserSchemaMock,
-            credentialsSchema: DBCredentialsSchemaMock,
-          },
-          jwtConfig: {
-            secret: "secret",
-            accessTokenExpiresIn: "1h",
-            refreshTokenExpiresIn: "1d",
-          },
+          mongoConfig: mongoConfigMock,
+          jwtConfig: jwtConfigMock,
           mapCredentials: (params: MapCredentialsParams) =>
             CredentialsMock.fromMapCredentials(params),
           authMethods: [
@@ -45,6 +39,7 @@ describe("SignInEmailPassword", () => {
         }),
       ],
     }).compile();
+    userService = rootModule.get(USER_SERVICE);
 
     app = rootModule.createNestApplication();
     app.useGlobalPipes(new ValidationPipe({ transform: true }));
@@ -60,14 +55,18 @@ describe("SignInEmailPassword", () => {
     beforeEach(setup);
     afterEach(teardown);
 
-    it("test", async () => {
+    it("Should create a new user.", async () => {
+      const email: string = "test@test.com";
       const response: request.Response = await request(app.getHttpServer())
         .post("/auth/signin")
         .send({
-          email: "test@test.com",
+          email,
           password: "testpassword",
         });
-      console.log(response.body);
+      const userId: string = response.body.current_user.id;
+      const user: Optional<UserMock> = await userService.getWithId(userId);
+      expect(user).toBeDefined();
+      expect(user?.email).toBe(email);
       expect(response.status).toBe(201);
     });
   });

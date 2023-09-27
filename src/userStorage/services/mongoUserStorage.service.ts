@@ -1,10 +1,9 @@
 import { Inject, Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
-import { Model, Types } from "mongoose";
+import { Model } from "mongoose";
 import {
   CreateOne,
   DeleteMany,
-  DeleteOne,
   FindOne,
   MongoDB,
   MongoDBQuery,
@@ -29,15 +28,6 @@ export class MongoUserStorage<User extends AnyUserRepresentation>
     @Inject(MONGO_DB) private readonly db: MongoDB,
   ) {}
 
-  public async getWithId(id: string): PromiseOptional<DatabaseModelOf<User>> {
-    if (!Types.ObjectId.isValid(id)) {
-      return undefined;
-    }
-    return this.db.perform(
-      MongoDBQuery.withModel(this.model).modifier(FindOne.withId(id)),
-    );
-  }
-
   public async getWith(params: any): PromiseOptional<DatabaseModelOf<User>> {
     return this.db.perform(
       MongoDBQuery.withModel(this.model).modifier(FindOne.where(params)),
@@ -52,15 +42,6 @@ export class MongoUserStorage<User extends AnyUserRepresentation>
     );
   }
 
-  public async updateWithId(
-    id: string,
-    user: Partial<DatabaseModelOf<User>>,
-  ): Promise<DatabaseModelOf<User>> {
-    return this.db.perform(
-      MongoDBQuery.withModel(this.model).modifier(UpdateOne.withId(id, user)),
-    );
-  }
-
   public async updateWith(
     params: any,
     user: Partial<DatabaseModelOf<User>>,
@@ -69,12 +50,6 @@ export class MongoUserStorage<User extends AnyUserRepresentation>
       MongoDBQuery.withModel(this.model).modifier(
         UpdateOne.where(params, user),
       ),
-    );
-  }
-
-  public async deleteWithId(id: string): Promise<void> {
-    await this.db.perform(
-      MongoDBQuery.withModel(this.model).modifier(DeleteOne.withId(id)),
     );
   }
 

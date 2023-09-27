@@ -7,5 +7,5 @@ export interface JWTService {
     authType: string;
   }): Promise<string>;
   createRefreshToken(params: { userId: string }): Promise<string>;
-  validateAccessToken(accessToken: string): Promise<any>;
+  validateToken(token: string): Promise<any>;
 }

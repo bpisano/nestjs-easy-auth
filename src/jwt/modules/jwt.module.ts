@@ -19,7 +19,7 @@ export class JWTModule {
         { provide: JWT_CONFIG, useValue: config },
         { provide: JWT_SERVICE, useClass: ApiJwtService },
       ],
-      exports: [JWT_SERVICE],
+      exports: [JWT_CONFIG, JWT_SERVICE],
     };
   }
 }

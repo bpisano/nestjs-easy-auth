@@ -62,8 +62,8 @@ export class ApiJwtService implements JWTService {
     return this.jwtService.signAsync(payload);
   }
 
-  public async validateAccessToken(accessToken: string): Promise<any> {
-    return this.jwtService.verifyAsync(accessToken, {
+  public async validateToken(token: string): Promise<any> {
+    return this.jwtService.verifyAsync(token, {
       secret: this.config.secret,
     });
   }

@@ -24,7 +24,7 @@ export class DBCredentials {
   @Prop()
   public readonly refreshTokenExpiration: Date;
 
-  public toApiModel: () => CredentialsMock;
+  public toAppModel: () => CredentialsMock;
 }
 
 export type DBCredentialsDocumentMock = HydratedDocument<DBCredentials>;
@@ -32,7 +32,7 @@ export type DBCredentialsDocumentMock = HydratedDocument<DBCredentials>;
 export const DBCredentialsSchemaMock: MongooseSchema<DBCredentialsDocumentMock> =
   SchemaFactory.createForClass(DBCredentials);
 
-DBCredentialsSchemaMock.methods.toApiModel = function (): CredentialsMock {
+DBCredentialsSchemaMock.methods.toAppModel = function (): CredentialsMock {
   return new CredentialsMock(
     this.userId,
     this.authType,

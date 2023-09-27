@@ -19,7 +19,7 @@ export function parseDayString(dayString: string): Optional<Date> {
   }
 
   const durationUnit: string = unitMap[unit];
-
   const resultDate: Date = add(new Date(), { [durationUnit]: numericValue });
+
   return resultDate;
 }

@@ -3,13 +3,12 @@ import { DatabaseModelOf } from "../../utils/types/databaseModelOf";
 import { PromiseOptional } from "../../utils/types/promiseOptional";
 
 export interface CredentialsStorage<
-  Credentials extends AnyCredentialsRepresentation
+  Credentials extends AnyCredentialsRepresentation,
 > {
-  getWithAccessToken(
-    accessToken: string
-  ): PromiseOptional<DatabaseModelOf<Credentials>>;
-  getWithUserId(userId: string): PromiseOptional<DatabaseModelOf<Credentials>>;
+  getOneWith(params: any): PromiseOptional<DatabaseModelOf<Credentials>>;
+  getManyWith(params: any): Promise<DatabaseModelOf<Credentials>[]>;
   create(
-    credentials: Partial<DatabaseModelOf<Credentials>>
+    credentials: Partial<DatabaseModelOf<Credentials>>,
   ): Promise<DatabaseModelOf<Credentials>>;
+  deleteOneWith(params: any): Promise<void>;
 }
