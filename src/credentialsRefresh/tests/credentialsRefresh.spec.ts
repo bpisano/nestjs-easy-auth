@@ -5,7 +5,7 @@ import { AuthModule } from '../../auth/modules/auth.module';
 import { MapCredentialsParams } from '../../auth/types/mapCredentialsParams';
 import {
   SignInEmailPassword,
-  SignInEmailPasswordUserMapInput
+  SignInEmailPasswordInput
 } from '../../authenticator/signInEmailPassword/signInEmailPassword.authenticator';
 import { CREDENTIALS_SERVICE } from '../../credentials/modules/credentials.moduleKeys';
 import { CredentialsService } from '../../credentials/services/credentials.service';
@@ -30,7 +30,7 @@ describe('CredentialsRefresh', () => {
           mapCredentials: (params: MapCredentialsParams) => CredentialsMock.fromMapCredentials(params),
           authMethods: [
             new SignInEmailPassword({
-              mapUser: (input: SignInEmailPasswordUserMapInput) => UserMock.fromSignInEmailPassword(input)
+              mapUser: (input: SignInEmailPasswordInput) => UserMock.fromSignInEmailPassword(input)
             })
           ]
         })

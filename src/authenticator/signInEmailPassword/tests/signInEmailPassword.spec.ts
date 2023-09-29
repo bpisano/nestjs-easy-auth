@@ -12,7 +12,7 @@ import { UserMock } from '../../../tests/user/models/app/user.mock';
 import { USER_SERVICE } from '../../../user/modules/user.moduleKeys';
 import { UserService } from '../../../user/services/user.service';
 import { Optional } from '../../../utils/types/optional';
-import { SignInEmailPassword, SignInEmailPasswordUserMapInput } from '../signInEmailPassword.authenticator';
+import { SignInEmailPassword, SignInEmailPasswordInput } from '../signInEmailPassword.authenticator';
 
 describe('SignInEmailPassword', () => {
   let app: INestApplication;
@@ -28,7 +28,7 @@ describe('SignInEmailPassword', () => {
           mapCredentials: (params: MapCredentialsParams) => CredentialsMock.fromMapCredentials(params),
           authMethods: [
             new SignInEmailPassword({
-              mapUser: (input: SignInEmailPasswordUserMapInput) => UserMock.fromSignInEmailPassword(input)
+              mapUser: (input: SignInEmailPasswordInput) => UserMock.fromSignInEmailPassword(input)
             })
           ]
         })

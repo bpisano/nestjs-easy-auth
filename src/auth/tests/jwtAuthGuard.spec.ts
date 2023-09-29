@@ -5,7 +5,7 @@ import { AuthModule } from '../../auth/modules/auth.module';
 import { MapCredentialsParams } from '../../auth/types/mapCredentialsParams';
 import {
   SignInEmailPassword,
-  SignInEmailPasswordUserMapInput
+  SignInEmailPasswordInput
 } from '../../authenticator/signInEmailPassword/signInEmailPassword.authenticator';
 import { CredentialsMock } from '../../tests/credentials/models/app/credentials.mock';
 import { jwtConfigMock } from '../../tests/jwtConfig/jwtConfig.mock';
@@ -35,7 +35,7 @@ describe('JwtAuthGuard', () => {
           mapCredentials: (params: MapCredentialsParams) => CredentialsMock.fromMapCredentials(params),
           authMethods: [
             new SignInEmailPassword({
-              mapUser: (input: SignInEmailPasswordUserMapInput) => UserMock.fromSignInEmailPassword(input)
+              mapUser: (input: SignInEmailPasswordInput) => UserMock.fromSignInEmailPassword(input)
             })
           ]
         })

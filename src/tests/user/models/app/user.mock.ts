@@ -1,5 +1,6 @@
+import * as bcrypt from 'bcrypt';
 import { Types } from 'mongoose';
-import { SignInEmailPasswordUserMapInput } from '../../../../authenticator/signInEmailPassword/signInEmailPassword.authenticator';
+import { SignInEmailPasswordInput } from '../../../../authenticator/signInEmailPassword/signInEmailPassword.authenticator';
 import { UserRepresentation } from '../../../../user/models/types/userRepresentation';
 import { DatabaseModelOf } from '../../../../utils/types/databaseModelOf';
 import { DBUserDocumentMock } from '../db/dbUser.mock';
@@ -12,10 +13,11 @@ export class UserMock implements UserRepresentation<DBUserDocumentMock, PublicUs
     public readonly hashedPassword?: string
   ) {}
 
-  public static fromSignInEmailPassword(input: SignInEmailPasswordUserMapInput): Partial<DatabaseModelOf<UserMock>> {
+  public static fromSignInEmailPassword(input: SignInEmailPasswordInput): Partial<DatabaseModelOf<UserMock>> {
+    const hashedPassword: string = bcrypt.hashSync(input.password, 10);
     return {
       email: input.email,
-      hashedPassword: input.hashedPassword
+      hashedPassword
     };
   }
 
