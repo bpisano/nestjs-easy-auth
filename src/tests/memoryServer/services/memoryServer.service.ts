@@ -1,4 +1,4 @@
-import { MongoMemoryServer } from "mongodb-memory-server";
+import { MongoMemoryServer } from 'mongodb-memory-server';
 
 export class MemoryServer {
   private static instance?: MemoryServer;

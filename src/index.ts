@@ -147,22 +147,22 @@
 //
 //
 
-import { Controller, Post } from "@nestjs/common";
-
-interface Auth {
-  path: string;
-}
-
-function createController<T extends Auth>(params: { auth: T }) {
-  const path = params.auth.path;
-  @Controller("auth")
-  class AuthController {
-    @Post(path)
-    async performAuth() {
-      console.log(path);
-    }
-  }
-  return AuthController;
-}
-
-export const AuthController = createController({ auth: { path: "email" } });
+// import { Controller, Post } from '@nestjs/common';
+//
+// interface Auth {
+//   path: string;
+// }
+//
+// function createController<T extends Auth>(params: { auth: T }) {
+//   const path = params.auth.path;
+//   @Controller('auth')
+//   class AuthController {
+//     @Post(path)
+//     async performAuth() {
+//       console.log(path);
+//     }
+//   }
+//   return AuthController;
+// }
+//
+// export const AuthController = createController({ auth: { path: 'email' } });

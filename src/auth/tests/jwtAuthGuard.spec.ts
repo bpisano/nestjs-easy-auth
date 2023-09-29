@@ -1,4 +1,4 @@
-import { INestApplication, ValidationPipe } from '@nestjs/common';
+import { Controller, Get, HttpStatus, INestApplication, ValidationPipe } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import * as request from 'supertest';
 import { AuthModule } from '../../auth/modules/auth.module';
@@ -7,8 +7,6 @@ import {
   SignInEmailPassword,
   SignInEmailPasswordUserMapInput
 } from '../../authenticator/signInEmailPassword/signInEmailPassword.authenticator';
-import { CREDENTIALS_SERVICE } from '../../credentials/modules/credentials.moduleKeys';
-import { CredentialsService } from '../../credentials/services/credentials.service';
 import { CredentialsMock } from '../../tests/credentials/models/app/credentials.mock';
 import { jwtConfigMock } from '../../tests/jwtConfig/jwtConfig.mock';
 import { TestMongooseModule } from '../../tests/memoryServer/modules/memoryServer.module';
@@ -16,9 +14,16 @@ import { MemoryServer } from '../../tests/memoryServer/services/memoryServer.ser
 import { mongoConfigMock } from '../../tests/mongoConfig/mongoConfig.mock';
 import { UserMock } from '../../tests/user/models/app/user.mock';
 
-describe('CredentialsRefresh', () => {
+@Controller()
+class TestController {
+  @Get('private')
+  public privateRoute(): void {
+    return;
+  }
+}
+
+describe('JwtAuthGuard', () => {
   let app: INestApplication;
-  let credentialsService: CredentialsService<CredentialsMock>;
 
   async function setup(): Promise<void> {
     const rootModule: TestingModule = await Test.createTestingModule({
@@ -34,9 +39,9 @@ describe('CredentialsRefresh', () => {
             })
           ]
         })
-      ]
+      ],
+      controllers: [TestController]
     }).compile();
-    credentialsService = rootModule.get(CREDENTIALS_SERVICE);
 
     app = rootModule.createNestApplication();
     app.useGlobalPipes(new ValidationPipe({ transform: true }));
@@ -52,20 +57,27 @@ describe('CredentialsRefresh', () => {
     beforeEach(setup);
     afterEach(teardown);
 
-    it('Should refresh credentials.', async () => {
+    it('Should access private route with valid credentials.', async () => {
       const email: string = 'test@test.com';
       const signInResponse: request.Response = await request(app.getHttpServer()).post('/auth/signin').send({
         email,
         password: 'testpassword'
       });
-      const userId: string = signInResponse.body.current_user.id;
-      const refreshToken: string = signInResponse.body.credentials.refreshToken;
-      const refreshResponse: request.Response = await request(app.getHttpServer()).post('/auth/refresh').send({
-        refresh_token: refreshToken
-      });
-      const credentials: CredentialsMock[] = await credentialsService.getWithUserId(userId);
-      expect(credentials.length).toBe(1);
-      expect(refreshResponse.status).toBe(201);
+      const accessToken: string = signInResponse.body.credentials.accessToken;
+      const testControllerResponse: request.Response = await request(app.getHttpServer())
+        .get('/private')
+        .set('Authorization', `Bearer ${accessToken}`);
+      expect(testControllerResponse.status).toBe(200);
+    });
+  });
+
+  describe('Failure', () => {
+    beforeEach(setup);
+    afterEach(teardown);
+
+    it('Should not access private route with invalid credentials.', async () => {
+      const testControllerResponse: request.Response = await request(app.getHttpServer()).get('/private');
+      expect(testControllerResponse.status).toBe(HttpStatus.FORBIDDEN);
     });
   });
 });

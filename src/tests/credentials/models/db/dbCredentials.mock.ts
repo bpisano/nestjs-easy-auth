@@ -1,9 +1,9 @@
-import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
-import { HydratedDocument, Schema as MongooseSchema } from "mongoose";
-import { CredentialsMock } from "../app/credentials.mock";
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { HydratedDocument, Schema as MongooseSchema } from 'mongoose';
+import { CredentialsMock } from '../app/credentials.mock';
 
 @Schema({
-  collection: "credentials",
+  collection: 'credentials'
 })
 export class DBCredentials {
   @Prop()
@@ -39,6 +39,6 @@ DBCredentialsSchemaMock.methods.toAppModel = function (): CredentialsMock {
     this.accessToken,
     this.refreshToken,
     this.accessTokenExpiration,
-    this.refreshTokenExpiration,
+    this.refreshTokenExpiration
   );
 };

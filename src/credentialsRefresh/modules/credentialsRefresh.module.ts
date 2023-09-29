@@ -1,20 +1,18 @@
-import { DynamicModule, Module, Type } from "@nestjs/common";
-import { MapCredentials } from "../../auth/types/mapCredentials";
-import { AnyCredentialsRepresentation } from "../../credentials/models/types/anyCredentialsRepresentation";
-import { CredentialsModule } from "../../credentials/modules/credentials.module";
-import { CredentialsStorage } from "../../credentialsStorage/services/credentialsStorage.service";
-import { JWTConfig } from "../../jwt/models/types/jwtConfig";
-import { MongoConfig } from "../../mongoConfig/models/types/mongoConfig";
-import { AnyUserRepresentation } from "../../user/models/types/anyUserRepresentation";
-import { UserModule } from "../../user/modules/user.module";
-import { UserStorage } from "../../userStorage/services/userStorage.service";
-import { CredentialsRefreshController } from "../controllers/credentialsRefresh.controller";
+import { DynamicModule, Module, Type } from '@nestjs/common';
+import { MapCredentials } from '../../auth/types/mapCredentials';
+import { AnyCredentialsRepresentation } from '../../credentials/models/types/anyCredentialsRepresentation';
+import { CredentialsModule } from '../../credentials/modules/credentials.module';
+import { CredentialsStorage } from '../../credentialsStorage/services/credentialsStorage.service';
+import { JWTConfig } from '../../jwt/models/types/jwtConfig';
+import { MongoConfig } from '../../mongoConfig/models/types/mongoConfig';
+import { AnyUserRepresentation } from '../../user/models/types/anyUserRepresentation';
+import { UserModule } from '../../user/modules/user.module';
+import { UserStorage } from '../../userStorage/services/userStorage.service';
+import { CredentialsRefreshController } from '../controllers/credentialsRefresh.controller';
 
 @Module({})
 export class CredentialsRefreshModule {
-  public static mongo<
-    Credentials extends AnyCredentialsRepresentation,
-  >(params: {
+  public static mongo<Credentials extends AnyCredentialsRepresentation>(params: {
     config: MongoConfig;
     jwtConfig: JWTConfig;
     mapCredentials: MapCredentials<Credentials>;
@@ -24,19 +22,17 @@ export class CredentialsRefreshModule {
       imports: [
         CredentialsModule.mongo({
           config: params.config,
-          jwtConfig: params.jwtConfig,
+          jwtConfig: params.jwtConfig
         }),
-        UserModule.mongo({ config: params.config }),
+        UserModule.mongo({ config: params.config })
       ],
-      controllers: [
-        CredentialsRefreshController({ mapCredentials: params.mapCredentials }),
-      ],
+      controllers: [CredentialsRefreshController({ mapCredentials: params.mapCredentials })]
     };
   }
 
   public static withConfig<
     Credentials extends AnyCredentialsRepresentation,
-    User extends AnyUserRepresentation,
+    User extends AnyUserRepresentation
   >(params: {
     credentialsStorage: Type<CredentialsStorage<Credentials>>;
     userStorage: Type<UserStorage<User>>;
@@ -48,15 +44,13 @@ export class CredentialsRefreshModule {
       imports: [
         CredentialsModule.withConfig({
           storage: params.credentialsStorage,
-          jwtConfig: params.jwtConfig,
+          jwtConfig: params.jwtConfig
         }),
         UserModule.withConfig({
-          storage: params.userStorage,
-        }),
+          storage: params.userStorage
+        })
       ],
-      controllers: [
-        CredentialsRefreshController({ mapCredentials: params.mapCredentials }),
-      ],
+      controllers: [CredentialsRefreshController({ mapCredentials: params.mapCredentials })]
     };
   }
 }

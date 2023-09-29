@@ -1,5 +1,5 @@
-import { CustomDecorator, SetMetadata } from "@nestjs/common";
-import { PUBLIC_KEY } from "../../utils/constants";
+import { CustomDecorator, SetMetadata } from '@nestjs/common';
+import { PUBLIC_KEY } from '../../utils/constants';
 
 /**
  * A decorator to mark a controller or a route as public.

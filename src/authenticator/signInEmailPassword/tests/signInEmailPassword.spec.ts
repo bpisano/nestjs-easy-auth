@@ -1,23 +1,20 @@
-import { INestApplication, ValidationPipe } from "@nestjs/common";
-import { Test, TestingModule } from "@nestjs/testing";
-import * as request from "supertest";
-import { AuthModule } from "../../../auth/modules/auth.module";
-import { MapCredentialsParams } from "../../../auth/types/mapCredentialsParams";
-import { CredentialsMock } from "../../../tests/credentials/models/app/credentials.mock";
-import { jwtConfigMock } from "../../../tests/jwtConfig/jwtConfig.mock";
-import { TestMongooseModule } from "../../../tests/memoryServer/modules/memoryServer.module";
-import { MemoryServer } from "../../../tests/memoryServer/services/memoryServer.service";
-import { mongoConfigMock } from "../../../tests/mongoConfig/mongoConfig.mock";
-import { UserMock } from "../../../tests/user/models/app/user.mock";
-import { USER_SERVICE } from "../../../user/modules/user.moduleKeys";
-import { UserService } from "../../../user/services/user.service";
-import { Optional } from "../../../utils/types/optional";
-import {
-  SignInEmailPassword,
-  SignInEmailPasswordUserMapInput,
-} from "../signInEmailPassword.authenticator";
+import { INestApplication, ValidationPipe } from '@nestjs/common';
+import { Test, TestingModule } from '@nestjs/testing';
+import * as request from 'supertest';
+import { AuthModule } from '../../../auth/modules/auth.module';
+import { MapCredentialsParams } from '../../../auth/types/mapCredentialsParams';
+import { CredentialsMock } from '../../../tests/credentials/models/app/credentials.mock';
+import { jwtConfigMock } from '../../../tests/jwtConfig/jwtConfig.mock';
+import { TestMongooseModule } from '../../../tests/memoryServer/modules/memoryServer.module';
+import { MemoryServer } from '../../../tests/memoryServer/services/memoryServer.service';
+import { mongoConfigMock } from '../../../tests/mongoConfig/mongoConfig.mock';
+import { UserMock } from '../../../tests/user/models/app/user.mock';
+import { USER_SERVICE } from '../../../user/modules/user.moduleKeys';
+import { UserService } from '../../../user/services/user.service';
+import { Optional } from '../../../utils/types/optional';
+import { SignInEmailPassword, SignInEmailPasswordUserMapInput } from '../signInEmailPassword.authenticator';
 
-describe("SignInEmailPassword", () => {
+describe('SignInEmailPassword', () => {
   let app: INestApplication;
   let userService: UserService<UserMock>;
 
@@ -28,16 +25,14 @@ describe("SignInEmailPassword", () => {
         AuthModule.mongo<CredentialsMock, UserMock>({
           mongoConfig: mongoConfigMock,
           jwtConfig: jwtConfigMock,
-          mapCredentials: (params: MapCredentialsParams) =>
-            CredentialsMock.fromMapCredentials(params),
+          mapCredentials: (params: MapCredentialsParams) => CredentialsMock.fromMapCredentials(params),
           authMethods: [
             new SignInEmailPassword({
-              mapUser: (input: SignInEmailPasswordUserMapInput) =>
-                UserMock.fromSignInEmailPassword(input),
-            }),
-          ],
-        }),
-      ],
+              mapUser: (input: SignInEmailPasswordUserMapInput) => UserMock.fromSignInEmailPassword(input)
+            })
+          ]
+        })
+      ]
     }).compile();
     userService = rootModule.get(USER_SERVICE);
 
@@ -51,18 +46,16 @@ describe("SignInEmailPassword", () => {
     await app.close();
   }
 
-  describe("Success", () => {
+  describe('Success', () => {
     beforeEach(setup);
     afterEach(teardown);
 
-    it("Should create a new user.", async () => {
-      const email: string = "test@test.com";
-      const response: request.Response = await request(app.getHttpServer())
-        .post("/auth/signin")
-        .send({
-          email,
-          password: "testpassword",
-        });
+    it('Should create a new user.', async () => {
+      const email: string = 'test@test.com';
+      const response: request.Response = await request(app.getHttpServer()).post('/auth/signin').send({
+        email,
+        password: 'testpassword'
+      });
       const userId: string = response.body.current_user.id;
       const user: Optional<UserMock> = await userService.getWithId(userId);
       expect(user).toBeDefined();

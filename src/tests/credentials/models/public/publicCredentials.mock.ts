@@ -5,6 +5,6 @@ export class PublicCredentialsMock {
     public readonly accessToken: string,
     public readonly refreshToken: string,
     public readonly accessTokenExpiration: Date,
-    public readonly refreshTokenExpiration: Date,
+    public readonly refreshTokenExpiration: Date
   ) {}
 }

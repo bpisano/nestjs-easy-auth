@@ -1,10 +1,10 @@
-import { DynamicModule, Module, Type } from "@nestjs/common";
-import { MongoConfig } from "../../mongoConfig/models/types/mongoConfig";
-import { UserStorageModule } from "../../userStorage/modules/userStorage.module";
-import { UserStorage } from "../../userStorage/services/userStorage.service";
-import { AnyUserRepresentation } from "../models/types/anyUserRepresentation";
-import { ApiUserService } from "../services/apiUser.service";
-import { USER_SERVICE } from "./user.moduleKeys";
+import { DynamicModule, Module, Type } from '@nestjs/common';
+import { MongoConfig } from '../../mongoConfig/models/types/mongoConfig';
+import { UserStorageModule } from '../../userStorage/modules/userStorage.module';
+import { UserStorage } from '../../userStorage/services/userStorage.service';
+import { AnyUserRepresentation } from '../models/types/anyUserRepresentation';
+import { ApiUserService } from '../services/apiUser.service';
+import { USER_SERVICE } from './user.moduleKeys';
 
 @Module({})
 export class UserModule {
@@ -15,7 +15,7 @@ export class UserModule {
       module: UserModule,
       imports: [UserStorageModule.usingStorage(params.storage)],
       providers: [{ provide: USER_SERVICE, useClass: ApiUserService }],
-      exports: [USER_SERVICE],
+      exports: [USER_SERVICE]
     };
   }
 
@@ -24,7 +24,7 @@ export class UserModule {
       module: UserModule,
       imports: [UserStorageModule.mongo({ config: params.config })],
       providers: [{ provide: USER_SERVICE, useClass: ApiUserService }],
-      exports: [USER_SERVICE],
+      exports: [USER_SERVICE]
     };
   }
 }

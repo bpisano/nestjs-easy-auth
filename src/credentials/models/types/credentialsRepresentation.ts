@@ -1,7 +1,4 @@
-import {
-  ToDatabaseModelConvertible,
-  ToPublicModelConvertible,
-} from "model-conversion";
+import { ToDatabaseModelConvertible, ToPublicModelConvertible } from 'model-conversion';
 
 export type CredentialsRepresentation<DatabaseModel, PublicModel> = {
   userId: string;

@@ -1,6 +1,6 @@
-import { DatabaseModelOf } from "../../utils/types/databaseModelOf";
-import { PromiseOptional } from "../../utils/types/promiseOptional";
-import { AnyUserRepresentation } from "../models/types/anyUserRepresentation";
+import { DatabaseModelOf } from '../../utils/types/databaseModelOf';
+import { PromiseOptional } from '../../utils/types/promiseOptional';
+import { AnyUserRepresentation } from '../models/types/anyUserRepresentation';
 
 export interface UserService<User extends AnyUserRepresentation> {
   getWithId(id: string): PromiseOptional<User>;

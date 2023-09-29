@@ -1,4 +1,4 @@
 export enum TokenType {
-  access = "access",
-  refresh = "refresh",
+  access = 'access',
+  refresh = 'refresh'
 }

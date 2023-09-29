@@ -1,5 +1,5 @@
-import { AnyUserRepresentation } from "../user/models/types/anyUserRepresentation";
-import { UserService } from "../user/services/user.service";
+import { AnyUserRepresentation } from '../user/models/types/anyUserRepresentation';
+import { UserService } from '../user/services/user.service';
 
 export interface Authenticator<Input, User extends AnyUserRepresentation> {
   authMethod: string;
