@@ -18,7 +18,6 @@ import { CredentialsService } from '../../credentials/services/credentials.servi
 import { CredentialsRefreshModule } from '../../credentialsRefresh/modules/credentialsRefresh.module';
 import { JWTConfig } from '../../jwt/models/types/jwtConfig';
 import { JWTModule } from '../../jwt/modules/jwt.module';
-import { MongoConfig } from '../../mongoConfig/models/types/mongoConfig';
 import { Session } from '../../session/models/api/session';
 import { PublicSession } from '../../session/models/public/publicSession';
 import { AnyUserRepresentation } from '../../user/models/types/anyUserRepresentation';
@@ -33,8 +32,10 @@ import { MapCredentials } from '../types/mapCredentials';
 
 @Module({})
 export class AuthModule implements NestModule {
-  public static mongo<Credentials extends AnyCredentialsRepresentation, User extends AnyUserRepresentation>(params: {
-    mongoConfig: MongoConfig;
+  public static withConfiguration<
+    Credentials extends AnyCredentialsRepresentation,
+    User extends AnyUserRepresentation
+  >(config: {
     jwtConfig: JWTConfig;
     mapCredentials: MapCredentials<Credentials>;
     authMethods: Authenticator<any, User>[];
@@ -42,21 +43,17 @@ export class AuthModule implements NestModule {
     return {
       module: AuthModule,
       imports: [
-        JWTModule.withConfig(params.jwtConfig),
-        UserModule.mongo({ config: params.mongoConfig }),
-        CredentialsModule.mongo({
-          config: params.mongoConfig,
-          jwtConfig: params.jwtConfig
-        }),
-        CredentialsRefreshModule.mongo({
-          config: params.mongoConfig,
-          jwtConfig: params.jwtConfig,
-          mapCredentials: params.mapCredentials
+        JWTModule.withConfig(config.jwtConfig),
+        CredentialsModule.withConfiguration({ jwtConfig: config.jwtConfig }),
+        UserModule.forRoot(),
+        CredentialsRefreshModule.withConfiguration({
+          jwtConfig: config.jwtConfig,
+          mapCredentials: config.mapCredentials
         })
       ],
       providers: [JwtStrategy, { provide: APP_GUARD, useClass: JwtAuthGuard }],
-      controllers: params.authMethods.map((authenticator: Authenticator<any, User>) =>
-        this.createAuthenicatorController(authenticator, params.mapCredentials)
+      controllers: config.authMethods.map((authenticator: Authenticator<any, User>) =>
+        this.createAuthenicatorController(authenticator, config.mapCredentials)
       )
     };
   }

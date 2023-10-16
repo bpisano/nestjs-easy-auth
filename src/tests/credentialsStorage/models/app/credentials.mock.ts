@@ -1,10 +1,10 @@
-import { MapCredentialsParams } from '../../../../../auth/types/mapCredentialsParams';
-import { CredentialsRepresentation } from '../../../../../credentials/models/types/credentialsRepresentation';
-import { DatabaseModelOf } from '../../../../types/databaseModelOf';
-import { DBCredentialsDocumentMock } from '../db/dbCredentials.mock';
+import { MapCredentialsParams } from '../../../../auth/types/mapCredentialsParams';
+import { CredentialsRepresentation } from '../../../../credentials/models/types/credentialsRepresentation';
+import { DatabaseModelOf } from '../../../../utils/types/databaseModelOf';
+import { DBCredentialsMock } from '../db/dbCredentials.mock';
 import { PublicCredentialsMock } from '../public/publicCredentials.mock';
 
-export class CredentialsMock implements CredentialsRepresentation<DBCredentialsDocumentMock, PublicCredentialsMock> {
+export class CredentialsMock implements CredentialsRepresentation<DBCredentialsMock, PublicCredentialsMock> {
   public constructor(
     public readonly userId: string,
     public readonly authType: string,
@@ -25,15 +25,15 @@ export class CredentialsMock implements CredentialsRepresentation<DBCredentialsD
     };
   }
 
-  public toDatabaseModel(): DBCredentialsDocumentMock {
-    return {
-      userId: this.userId,
-      authType: this.authType,
-      accessToken: this.accessToken,
-      refreshToken: this.refreshToken,
-      accessTokenExpiration: this.accessTokenExpiration,
-      refreshTokenExpiration: this.refreshTokenExpiration
-    } as DBCredentialsDocumentMock;
+  public toDatabaseModel(): DBCredentialsMock {
+    return new DBCredentialsMock(
+      this.userId,
+      this.authType,
+      this.accessToken,
+      this.refreshToken,
+      this.accessTokenExpiration,
+      this.refreshTokenExpiration
+    );
   }
 
   public toPublicModel(): PublicCredentialsMock {

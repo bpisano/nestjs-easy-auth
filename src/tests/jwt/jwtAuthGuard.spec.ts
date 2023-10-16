@@ -7,12 +7,10 @@ import {
   SignInEmailPassword,
   SignInEmailPasswordInput
 } from '../../authenticator/signInEmailPassword/signInEmailPassword.authenticator';
-import { CredentialsMock } from '../../utils/tests/credentials/models/app/credentials.mock';
-import { jwtConfigMock } from '../../utils/tests/jwtConfig/jwtConfig.mock';
-import { TestMongooseModule } from '../../utils/tests/memoryServer/modules/memoryServer.module';
-import { MemoryServer } from '../../utils/tests/memoryServer/services/memoryServer.service';
-import { mongoConfigMock } from '../../utils/tests/mongoConfig/mongoConfig.mock';
-import { UserMock } from '../../utils/tests/user/models/app/user.mock';
+import { TestAuthModule } from '../auth/modules/testAuth.module';
+import { CredentialsMock } from '../credentialsStorage/models/app/credentials.mock';
+import { UserMock } from '../userStorage/models/app/user.mock';
+import { jwtConfigMock } from './models/jwtConfig.mock';
 
 @Controller()
 class TestController {
@@ -28,9 +26,8 @@ describe('JwtAuthGuard', () => {
   async function setup(): Promise<void> {
     const rootModule: TestingModule = await Test.createTestingModule({
       imports: [
-        TestMongooseModule,
-        AuthModule.mongo({
-          mongoConfig: mongoConfigMock,
+        TestAuthModule,
+        AuthModule.withConfiguration({
           jwtConfig: jwtConfigMock,
           mapCredentials: (params: MapCredentialsParams) => CredentialsMock.fromMapCredentials(params),
           authMethods: [
@@ -49,7 +46,6 @@ describe('JwtAuthGuard', () => {
   }
 
   async function teardown(): Promise<void> {
-    await MemoryServer.getInstance().stop();
     await app.close();
   }
 
