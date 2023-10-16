@@ -7,12 +7,12 @@ import {
   SignInEmailPassword,
   SignInEmailPasswordInput
 } from '../../authenticator/signInEmailPassword/signInEmailPassword.authenticator';
-import { CredentialsMock } from '../../tests/credentials/models/app/credentials.mock';
-import { jwtConfigMock } from '../../tests/jwtConfig/jwtConfig.mock';
-import { TestMongooseModule } from '../../tests/memoryServer/modules/memoryServer.module';
-import { MemoryServer } from '../../tests/memoryServer/services/memoryServer.service';
-import { mongoConfigMock } from '../../tests/mongoConfig/mongoConfig.mock';
-import { UserMock } from '../../tests/user/models/app/user.mock';
+import { CredentialsMock } from '../../utils/tests/credentials/models/app/credentials.mock';
+import { jwtConfigMock } from '../../utils/tests/jwtConfig/jwtConfig.mock';
+import { TestMongooseModule } from '../../utils/tests/memoryServer/modules/memoryServer.module';
+import { MemoryServer } from '../../utils/tests/memoryServer/services/memoryServer.service';
+import { mongoConfigMock } from '../../utils/tests/mongoConfig/mongoConfig.mock';
+import { UserMock } from '../../utils/tests/user/models/app/user.mock';
 
 @Controller()
 class TestController {

@@ -1,12 +1,12 @@
 {
-  "name": "user-kit",
+  "name": "nestjs-auth",
   "version": "0.0.1",
   "description": "User authentication for NestJS.",
   "author": "bpisano",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/bpisano/user-kit-ts.git"
+    "url": "git+https://github.com/bpisano/nestjs-auth.git"
   },
   "publishConfig": {
     "@bpisano:registry": "https://npm.pkg.github.com"
