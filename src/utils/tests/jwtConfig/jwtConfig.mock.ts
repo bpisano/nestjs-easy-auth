@@ -1,5 +1,5 @@
 import { ExtractJwt } from 'passport-jwt';
-import { JWTConfig } from '../../jwt/models/types/jwtConfig';
+import { JWTConfig } from '../../../jwt/models/types/jwtConfig';
 
 export const jwtConfigMock: JWTConfig = {
   secret: 'secret',

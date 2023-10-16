@@ -1,6 +1,6 @@
-import { MapCredentialsParams } from '../../../../auth/types/mapCredentialsParams';
-import { CredentialsRepresentation } from '../../../../credentials/models/types/credentialsRepresentation';
-import { DatabaseModelOf } from '../../../../utils/types/databaseModelOf';
+import { MapCredentialsParams } from '../../../../../auth/types/mapCredentialsParams';
+import { CredentialsRepresentation } from '../../../../../credentials/models/types/credentialsRepresentation';
+import { DatabaseModelOf } from '../../../../types/databaseModelOf';
 import { DBCredentialsDocumentMock } from '../db/dbCredentials.mock';
 import { PublicCredentialsMock } from '../public/publicCredentials.mock';
 

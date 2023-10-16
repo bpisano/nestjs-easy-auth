@@ -1,4 +1,4 @@
-import { MongoConfig } from '../../mongoConfig/models/types/mongoConfig';
+import { MongoConfig } from '../../../mongoConfig/models/types/mongoConfig';
 import { DBCredentialsSchemaMock } from '../credentials/models/db/dbCredentials.mock';
 import { DBUserSchemaMock } from '../user/models/db/dbUser.mock';
 
