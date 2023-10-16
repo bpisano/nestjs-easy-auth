@@ -1,3 +1,4 @@
+import { Optional } from '@nestjs/common';
 import { Authenticator } from 'passport';
 import { JwtAuthGuard } from './auth/guards/jwtAuth.guard';
 import { AuthModule } from './auth/modules/auth.module';
@@ -10,6 +11,9 @@ import { JWTConfig } from './jwt/models/types/jwtConfig';
 import { AnyUserRepresentation } from './user/models/types/anyUserRepresentation';
 import { USER_STORAGE } from './userStorage/modules/userStorage.moduleKeys';
 import { UserStorage } from './userStorage/services/userStorage.service';
+import { DatabaseModelOf } from './utils/types/databaseModelOf';
+import { PromiseOptional } from './utils/types/promiseOptional';
+import { PublicModelOf } from './utils/types/publicModelOf';
 
 export {
   AnyCredentialsRepresentation,
@@ -18,9 +22,13 @@ export {
   Authenticator,
   CREDENTIALS_STORAGE,
   CredentialsStorage,
+  DatabaseModelOf,
   JWTConfig,
   JwtAuthGuard,
   MapCredentials,
+  Optional,
+  PromiseOptional,
+  PublicModelOf,
   SignInEmailPassword,
   USER_STORAGE,
   UserStorage
