@@ -7,7 +7,7 @@ import { Authenticator } from '../authenticator';
 
 export type SignInEmailPasswordInput = { email: string; password: string };
 
-export class SignInEmailPassword<User extends AnyUserRepresentation>
+export class SignInEmailPassword<User extends AnyUserRepresentation & { email: string; hashedPassword?: string }>
   implements Authenticator<SignInEmailPasswordInput, User>
 {
   public readonly authMethod: string = 'emailAndPassword';
