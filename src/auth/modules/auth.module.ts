@@ -10,6 +10,8 @@ import {
   Type
 } from '@nestjs/common';
 import { APP_GUARD } from '@nestjs/core';
+import { EventEmitter2, EventEmitterModule } from '@nestjs/event-emitter';
+import { ClassConstructor } from 'class-transformer';
 import { Authenticator } from '../../authenticator/authenticator';
 import { AnyCredentialsRepresentation } from '../../credentials/models/types/anyCredentialsRepresentation';
 import { CredentialsModule } from '../../credentials/modules/credentials.module';
@@ -28,7 +30,6 @@ import { Public } from '../decorators/public.decorator';
 import { JwtAuthGuard } from '../guards/jwtAuth.guard';
 import { InjectUserMiddleware } from '../middlewares/injectUser.middleware';
 import { JwtStrategy } from '../passport/jwt.strategy';
-import { MapCredentials } from '../types/mapCredentials';
 
 @Module({})
 export class AuthModule implements NestModule {
@@ -37,23 +38,27 @@ export class AuthModule implements NestModule {
     User extends AnyUserRepresentation
   >(config: {
     jwtConfig: JWTConfig;
-    mapCredentials: MapCredentials<Credentials>;
+    credentialsModel: ClassConstructor<Credentials>;
     authMethods: Authenticator<any, User>[];
   }): DynamicModule {
     return {
       module: AuthModule,
       imports: [
+        EventEmitterModule.forRoot({
+          wildcard: true,
+          delimiter: '.'
+        }),
         JWTModule.withConfig(config.jwtConfig),
-        CredentialsModule.withConfiguration({ jwtConfig: config.jwtConfig }),
+        CredentialsModule.withConfiguration({ jwtConfig: config.jwtConfig, model: config.credentialsModel }),
         UserModule.forRoot(),
         CredentialsRefreshModule.withConfiguration({
           jwtConfig: config.jwtConfig,
-          mapCredentials: config.mapCredentials
+          model: config.credentialsModel
         })
       ],
       providers: [JwtStrategy, { provide: APP_GUARD, useClass: JwtAuthGuard }],
       controllers: config.authMethods.map((authenticator: Authenticator<any, User>) =>
-        this.createAuthenicatorController(authenticator, config.mapCredentials)
+        this.createAuthenicatorController(authenticator)
       )
     };
   }
@@ -62,10 +67,11 @@ export class AuthModule implements NestModule {
     Input,
     Credentials extends AnyCredentialsRepresentation,
     User extends AnyUserRepresentation
-  >(authenticator: Authenticator<Input, User>, mapCredentials: MapCredentials<Credentials>): Type<any> {
+  >(authenticator: Authenticator<Input, User>): Type<any> {
     @Controller('auth')
     class AuthenticatorController {
       public constructor(
+        private readonly eventEmitter: EventEmitter2,
         @Inject(CREDENTIALS_SERVICE)
         private readonly credentialsService: CredentialsService<Credentials>,
         @Inject(USER_SERVICE) private readonly userSservice: UserService<User>
@@ -75,11 +81,15 @@ export class AuthModule implements NestModule {
       @Post(authenticator.path)
       public async authenticate(@Body() input: Input): Promise<PublicSession<Credentials, User>> {
         const user: User = await authenticator.authenticate(input, this.userSservice);
-        const credentials: Credentials = await this.credentialsService.create(
-          { userId: user.id, authType: authenticator.authMethod },
-          mapCredentials
-        );
+        const credentials: Credentials = await this.credentialsService.create({
+          userId: user.id,
+          authType: authenticator.authMethod
+        });
         const session: Session<Credentials, User> = new Session(credentials, user);
+        this.eventEmitter.emit(`auth.${authenticator.path}`, {
+          input: input,
+          session
+        });
         return session.toPublicModel();
       }
     }

@@ -1,8 +1,6 @@
 import { Authenticator } from 'passport';
 import { JwtAuthGuard } from './auth/guards/jwtAuth.guard';
 import { AuthModule } from './auth/modules/auth.module';
-import { MapCredentials } from './auth/types/mapCredentials';
-import { MapCredentialsParams } from './auth/types/mapCredentialsParams';
 import {
   SignInEmailPassword,
   SignInEmailPasswordInput
@@ -38,8 +36,6 @@ export {
   DatabaseModelOf,
   JWTConfig,
   JwtAuthGuard,
-  MapCredentials,
-  MapCredentialsParams,
   Optional,
   PromiseOptional,
   PublicModelOf,

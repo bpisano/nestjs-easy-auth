@@ -2,7 +2,6 @@ import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import * as request from 'supertest';
 import { AuthModule } from '../../auth/modules/auth.module';
-import { MapCredentialsParams } from '../../auth/types/mapCredentialsParams';
 import { LogInEmailPassword } from '../../authenticator/logInEmailPassword/logInEmailPassword.authenticator';
 import {
   SignInEmailPassword,
@@ -22,7 +21,7 @@ describe('LogInEmailPassword', () => {
         TestAuthModule,
         AuthModule.withConfiguration({
           jwtConfig: jwtConfigMock,
-          mapCredentials: (params: MapCredentialsParams) => CredentialsMock.fromMapCredentials(params),
+          credentialsModel: CredentialsMock,
           authMethods: [
             new SignInEmailPassword({
               mapUser: (input: SignInEmailPasswordInput) => UserMock.fromSignInEmailPassword(input)

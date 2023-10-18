@@ -1,4 +1,3 @@
-import { MapCredentials } from '../../auth/types/mapCredentials';
 import { PromiseOptional } from '../../utils/types/promiseOptional';
 import { AnyCredentialsRepresentation } from '../models/types/anyCredentialsRepresentation';
 
@@ -8,9 +7,6 @@ export interface CredentialsService<Credentials extends AnyCredentialsRepresenta
   getWithUserId(userId: string): Promise<Credentials[]>;
   getOneWith(params: any): PromiseOptional<Credentials>;
   getManyWith(params: any): Promise<Credentials[]>;
-  create(
-    params: { userId: string; authType: string },
-    mapCredentials: MapCredentials<Credentials>
-  ): Promise<Credentials>;
+  create(params: { userId: string; authType: string }): Promise<Credentials>;
   deleteWithAccessToken(accessToken: string): Promise<void>;
 }

@@ -2,7 +2,6 @@ import { Controller, Get, HttpStatus, INestApplication, ValidationPipe } from '@
 import { Test, TestingModule } from '@nestjs/testing';
 import * as request from 'supertest';
 import { AuthModule } from '../../auth/modules/auth.module';
-import { MapCredentialsParams } from '../../auth/types/mapCredentialsParams';
 import {
   SignInEmailPassword,
   SignInEmailPasswordInput
@@ -29,7 +28,7 @@ describe('JwtAuthGuard', () => {
         TestAuthModule,
         AuthModule.withConfiguration({
           jwtConfig: jwtConfigMock,
-          mapCredentials: (params: MapCredentialsParams) => CredentialsMock.fromMapCredentials(params),
+          credentialsModel: CredentialsMock,
           authMethods: [
             new SignInEmailPassword({
               mapUser: (input: SignInEmailPasswordInput) => UserMock.fromSignInEmailPassword(input)

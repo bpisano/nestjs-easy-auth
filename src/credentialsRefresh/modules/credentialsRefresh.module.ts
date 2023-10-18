@@ -1,5 +1,5 @@
 import { DynamicModule, Module } from '@nestjs/common';
-import { MapCredentials } from '../../auth/types/mapCredentials';
+import { ClassConstructor } from 'class-transformer';
 import { AnyCredentialsRepresentation } from '../../credentials/models/types/anyCredentialsRepresentation';
 import { CredentialsModule } from '../../credentials/modules/credentials.module';
 import { JWTConfig } from '../../jwt/models/types/jwtConfig';
@@ -10,17 +10,18 @@ import { CredentialsRefreshController } from '../controllers/credentialsRefresh.
 export class CredentialsRefreshModule {
   public static withConfiguration<Credentials extends AnyCredentialsRepresentation>(params: {
     jwtConfig: JWTConfig;
-    mapCredentials: MapCredentials<Credentials>;
+    model: ClassConstructor<Credentials>;
   }): DynamicModule {
     return {
       module: CredentialsModule,
       imports: [
         CredentialsModule.withConfiguration({
-          jwtConfig: params.jwtConfig
+          jwtConfig: params.jwtConfig,
+          model: params.model
         }),
         UserModule.forRoot()
       ],
-      controllers: [CredentialsRefreshController({ mapCredentials: params.mapCredentials })]
+      controllers: [CredentialsRefreshController]
     };
   }
 }

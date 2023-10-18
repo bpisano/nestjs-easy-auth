@@ -1,5 +1,5 @@
 import { Inject } from '@nestjs/common';
-import { MapCredentials } from '../../auth/types/mapCredentials';
+import { ClassConstructor, plainToInstance } from 'class-transformer';
 import { CREDENTIALS_STORAGE } from '../../credentialsStorage/modules/credentialsStorage.moduleKeys';
 import { CredentialsStorage } from '../../credentialsStorage/services/credentialsStorage.service';
 import { TokenType } from '../../jwt/models/enums/tokenType';
@@ -9,12 +9,14 @@ import { DatabaseModelOf } from '../../utils/types/databaseModelOf';
 import { Optional } from '../../utils/types/optional';
 import { PromiseOptional } from '../../utils/types/promiseOptional';
 import { AnyCredentialsRepresentation } from '../models/types/anyCredentialsRepresentation';
+import { CREDENTIALS_MODEL } from '../modules/credentials.moduleKeys';
 import { CredentialsService } from './credentials.service';
 
 export class ApiCredentialsService<Credentials extends AnyCredentialsRepresentation>
   implements CredentialsService<Credentials>
 {
   public constructor(
+    @Inject(CREDENTIALS_MODEL) private readonly credentialsModel: ClassConstructor<Credentials>,
     @Inject(CREDENTIALS_STORAGE)
     private readonly storage: CredentialsStorage<Credentials>,
     @Inject(JWT_SERVICE) private readonly jwtService: JWTService
@@ -42,10 +44,7 @@ export class ApiCredentialsService<Credentials extends AnyCredentialsRepresentat
     return dbCredentials.map((dbCredentials) => dbCredentials.toAppModel());
   }
 
-  public async create(
-    params: { userId: string; authType: string },
-    mapCredentials: MapCredentials<Credentials>
-  ): Promise<Credentials> {
+  public async create(params: { userId: string; authType: string }): Promise<Credentials> {
     const [accessToken, refreshToken]: string[] = await Promise.all([
       this.jwtService.createAccessToken({
         userId: params.userId,
@@ -57,17 +56,16 @@ export class ApiCredentialsService<Credentials extends AnyCredentialsRepresentat
     ]);
     const accessTokenExpiration: Date = this.jwtService.tokenExpirationDate(TokenType.access);
     const refreshTokenExpiration: Date = this.jwtService.tokenExpirationDate(TokenType.refresh);
-    const dbCredentials: DatabaseModelOf<Credentials> = await this.storage.create(
-      mapCredentials({
-        userId: params.userId,
-        authType: params.authType,
-        accessToken,
-        refreshToken,
-        accessTokenExpiration,
-        refreshTokenExpiration
-      })
-    );
-    return dbCredentials.toAppModel();
+    const credentials: Credentials = plainToInstance(this.credentialsModel, {
+      userId: params.userId,
+      authType: params.authType,
+      accessToken,
+      refreshToken,
+      accessTokenExpiration,
+      refreshTokenExpiration
+    });
+    const createdCredentials: DatabaseModelOf<Credentials> = await this.storage.create(credentials.toDatabaseModel());
+    return createdCredentials.toAppModel();
   }
 
   public async deleteWithAccessToken(accessToken: string): Promise<void> {
