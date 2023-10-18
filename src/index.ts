@@ -1,10 +1,11 @@
 import { Authenticator } from 'passport';
+import { Public } from './auth/decorators/public.decorator';
 import { JwtAuthGuard } from './auth/guards/jwtAuth.guard';
 import { AuthModule } from './auth/modules/auth.module';
-import {
-  SignInEmailPassword,
-  SignInEmailPasswordInput
-} from './authenticator/signInEmailPassword/signInEmailPassword.authenticator';
+import { LogInEmailPasswordDto } from './authenticator/services/logInEmailPassword/logInEmailPassword.dto';
+import { SignInEmailPasswordDto } from './authenticator/services/signInEmailPassword/signInEmailPassword.dto';
+import { LogInEmailPassword } from './authenticatorBundle/services/logInEmailPassword/logInEmailPassword.authBundle';
+import { SignInEmailPassword } from './authenticatorBundle/services/signInEmailPassword/signInEmailPassword.authBundle';
 import { AnyCredentialsRepresentation } from './credentials/models/types/anyCredentialsRepresentation';
 import { CredentialsRepresentation } from './credentials/models/types/credentialsRepresentation';
 import { CREDENTIALS_SERVICE } from './credentials/modules/credentials.moduleKeys';
@@ -36,11 +37,14 @@ export {
   DatabaseModelOf,
   JWTConfig,
   JwtAuthGuard,
+  LogInEmailPassword,
+  LogInEmailPasswordDto,
   Optional,
   PromiseOptional,
+  Public,
   PublicModelOf,
   SignInEmailPassword,
-  SignInEmailPasswordInput,
+  SignInEmailPasswordDto,
   USER_SERVICE,
   USER_STORAGE,
   UserRepresentation,

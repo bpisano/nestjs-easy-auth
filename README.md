@@ -6,15 +6,15 @@ A package to easily add authentication to your NestJS application.
 
 - [Installation](#installation)
 - [Quick start](#quick-start)
-    - [Creating your models](#creating-your-models)
-    - [Providing your database](#providing-your-database)
-    - [Adding authentication methods](#adding-authentication-methods)
+  - [Creating your models](#creating-your-models)
+  - [Providing your database](#providing-your-database)
+  - [Adding authentication methods](#adding-authentication-methods)
 - [Documentation](#documentation)
-    - [Introduction](#introduction)
-    - [Authentication methods](#authentication-methods)
-        - [Sign in with email and password](#sign-in-with-email-and-password)
-        - [Login with email and password](#login-with-email-and-password)
-    - [Creating your own authentication method](#creating-your-own-authentication-method)
+  - [Introduction](#introduction)
+  - [Authentication methods](#authentication-methods)
+    - [Sign in with email and password](#sign-in-with-email-and-password)
+    - [Login with email and password](#login-with-email-and-password)
+  - [Creating your own authentication method](#creating-your-own-authentication-method)
 
 # Installation
 
@@ -33,6 +33,7 @@ npm install nestjs-easy-auth
 ## Creating your models
 
 You need to provide 2 models in order for this package to work:
+
 - `Credentials`
 - `User`
 
@@ -52,17 +53,6 @@ export class Credentials implements CredentialsRepresentation<DBCredentials, Pub
     public readonly accessTokenExpiration: Date,
     public readonly refreshTokenExpiration: Date
   ) {}
-
-  public static fromMapCredentials(params: MapCredentialsParams): Partial<DBCredentials> {
-    return new DBCredentials(
-      params.userId,
-      params.authType,
-      params.accessToken,
-      params.refreshToken,
-      params.accessTokenExpiration,
-      params.refreshTokenExpiration
-    );
-  }
 
   // Required to convert the model to a database model.
   public toDatabaseModel(): DBCredentials {

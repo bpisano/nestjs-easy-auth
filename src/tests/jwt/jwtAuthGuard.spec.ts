@@ -1,12 +1,9 @@
 import { Controller, Get, HttpStatus, INestApplication, ValidationPipe } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import * as request from 'supertest';
+import { SignInEmailPassword } from '../..';
 import { AuthModule } from '../../auth/modules/auth.module';
-import {
-  SignInEmailPassword,
-  SignInEmailPasswordInput
-} from '../../authenticator/signInEmailPassword/signInEmailPassword.authenticator';
-import { TestAuthModule } from '../auth/modules/testAuth.module';
+import { AuthTestDatabaseProviderModule } from '../auth/modules/authTestDatabaseProvider.module';
 import { CredentialsMock } from '../credentialsStorage/models/app/credentials.mock';
 import { UserMock } from '../userStorage/models/app/user.mock';
 import { jwtConfigMock } from './models/jwtConfig.mock';
@@ -25,15 +22,14 @@ describe('JwtAuthGuard', () => {
   async function setup(): Promise<void> {
     const rootModule: TestingModule = await Test.createTestingModule({
       imports: [
-        TestAuthModule,
+        AuthTestDatabaseProviderModule,
         AuthModule.withConfiguration({
           jwtConfig: jwtConfigMock,
-          credentialsModel: CredentialsMock,
-          authMethods: [
-            new SignInEmailPassword({
-              mapUser: (input: SignInEmailPasswordInput) => UserMock.fromSignInEmailPassword(input)
-            })
-          ]
+          models: {
+            credentials: CredentialsMock,
+            user: UserMock
+          },
+          methods: [SignInEmailPassword.forRoot()]
         })
       ],
       controllers: [TestController]

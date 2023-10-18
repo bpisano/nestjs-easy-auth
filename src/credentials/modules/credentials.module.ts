@@ -1,4 +1,4 @@
-import { DynamicModule, Module } from '@nestjs/common';
+import { DynamicModule, Global, Module } from '@nestjs/common';
 import { ClassConstructor } from 'class-transformer';
 import { JWTConfig } from '../../jwt/models/types/jwtConfig';
 import { JWTModule } from '../../jwt/modules/jwt.module';
@@ -6,6 +6,7 @@ import { AnyCredentialsRepresentation } from '../models/types/anyCredentialsRepr
 import { ApiCredentialsService } from '../services/apiCredentials.service';
 import { CREDENTIALS_MODEL, CREDENTIALS_SERVICE } from './credentials.moduleKeys';
 
+@Global()
 @Module({})
 export class CredentialsModule {
   public static withConfiguration<Credentials extends AnyCredentialsRepresentation>(params: {

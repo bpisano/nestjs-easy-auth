@@ -1,13 +1,10 @@
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import * as request from 'supertest';
+import { SignInEmailPassword } from '../..';
 import { AuthModule } from '../../auth/modules/auth.module';
-import { LogInEmailPassword } from '../../authenticator/logInEmailPassword/logInEmailPassword.authenticator';
-import {
-  SignInEmailPassword,
-  SignInEmailPasswordInput
-} from '../../authenticator/signInEmailPassword/signInEmailPassword.authenticator';
-import { TestAuthModule } from '../auth/modules/testAuth.module';
+import { LogInEmailPassword } from '../../authenticatorBundle/services/logInEmailPassword/logInEmailPassword.authBundle';
+import { AuthTestDatabaseProviderModule } from '../auth/modules/authTestDatabaseProvider.module';
 import { CredentialsMock } from '../credentialsStorage/models/app/credentials.mock';
 import { jwtConfigMock } from '../jwt/models/jwtConfig.mock';
 import { UserMock } from '../userStorage/models/app/user.mock';
@@ -18,16 +15,14 @@ describe('LogInEmailPassword', () => {
   async function setup(): Promise<void> {
     const rootModule: TestingModule = await Test.createTestingModule({
       imports: [
-        TestAuthModule,
+        AuthTestDatabaseProviderModule,
         AuthModule.withConfiguration({
           jwtConfig: jwtConfigMock,
-          credentialsModel: CredentialsMock,
-          authMethods: [
-            new SignInEmailPassword({
-              mapUser: (input: SignInEmailPasswordInput) => UserMock.fromSignInEmailPassword(input)
-            }),
-            new LogInEmailPassword()
-          ]
+          models: {
+            credentials: CredentialsMock,
+            user: UserMock
+          },
+          methods: [SignInEmailPassword.forRoot(), LogInEmailPassword.forRoot()]
         })
       ]
     }).compile();

@@ -12,4 +12,4 @@ import { TestUserStorage } from '../../userStorage/services/testUserStorage.serv
   ],
   exports: [CREDENTIALS_STORAGE, USER_STORAGE]
 })
-export class TestAuthModule {}
+export class AuthTestDatabaseProviderModule {}
