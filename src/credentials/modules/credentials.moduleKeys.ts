@@ -1,2 +1,1 @@
 export const CREDENTIALS_SERVICE: string = 'CREDENTIALS_SERVICE';
-export const CREDENTIALS_MODEL: string = 'CREDENTIALS_MODEL';

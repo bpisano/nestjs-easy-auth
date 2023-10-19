@@ -1,22 +1,22 @@
 import { Inject } from '@nestjs/common';
-import { ClassConstructor, plainToInstance } from 'class-transformer';
 import { CREDENTIALS_STORAGE } from '../../credentialsStorage/modules/credentialsStorage.moduleKeys';
 import { CredentialsStorage } from '../../credentialsStorage/services/credentialsStorage.service';
 import { TokenType } from '../../jwt/models/enums/tokenType';
 import { JWT_SERVICE } from '../../jwt/modules/jwt.moduleKeys';
 import { JWTService } from '../../jwt/services/jwt.service';
+import { MODEL_PROVIDER } from '../../modelProvider/modules/modelProvider.moduleKeys';
+import { CredentialsModelProvider } from '../../modelProvider/services/modelProvider';
 import { DatabaseModelOf } from '../../utils/types/databaseModelOf';
 import { Optional } from '../../utils/types/optional';
 import { PromiseOptional } from '../../utils/types/promiseOptional';
 import { AnyCredentialsRepresentation } from '../models/types/anyCredentialsRepresentation';
-import { CREDENTIALS_MODEL } from '../modules/credentials.moduleKeys';
 import { CredentialsService } from './credentials.service';
 
 export class ApiCredentialsService<Credentials extends AnyCredentialsRepresentation>
   implements CredentialsService<Credentials>
 {
   public constructor(
-    @Inject(CREDENTIALS_MODEL) private readonly credentialsModel: ClassConstructor<Credentials>,
+    @Inject(MODEL_PROVIDER) private readonly modelProvider: CredentialsModelProvider<Credentials>,
     @Inject(CREDENTIALS_STORAGE)
     private readonly storage: CredentialsStorage<Credentials>,
     @Inject(JWT_SERVICE) private readonly jwtService: JWTService
@@ -56,7 +56,7 @@ export class ApiCredentialsService<Credentials extends AnyCredentialsRepresentat
     ]);
     const accessTokenExpiration: Date = this.jwtService.tokenExpirationDate(TokenType.access);
     const refreshTokenExpiration: Date = this.jwtService.tokenExpirationDate(TokenType.refresh);
-    const credentials: Credentials = plainToInstance(this.credentialsModel, {
+    const credentials: Credentials = this.modelProvider.provideCredentials({
       userId: params.userId,
       authType: params.authType,
       accessToken,

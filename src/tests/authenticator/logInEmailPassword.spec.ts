@@ -1,7 +1,7 @@
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import * as request from 'supertest';
-import { SignInEmailPassword } from '../..';
+import { DefaultModelProvider, SignInEmailPassword } from '../..';
 import { AuthModule } from '../../auth/modules/auth.module';
 import { LogInEmailPassword } from '../../authenticatorBundle/services/logInEmailPassword/logInEmailPassword.authBundle';
 import { AuthTestDatabaseProviderModule } from '../auth/modules/authTestDatabaseProvider.module';
@@ -18,10 +18,10 @@ describe('LogInEmailPassword', () => {
         AuthTestDatabaseProviderModule,
         AuthModule.withConfiguration({
           jwtConfig: jwtConfigMock,
-          models: {
+          modelProvider: DefaultModelProvider.withModels({
             credentials: CredentialsMock,
             user: UserMock
-          },
+          }),
           methods: [SignInEmailPassword.forRoot(), LogInEmailPassword.forRoot()]
         })
       ]

@@ -5,6 +5,7 @@ import { SignInEmailPassword } from '../..';
 import { AuthModule } from '../../auth/modules/auth.module';
 import { CREDENTIALS_SERVICE } from '../../credentials/modules/credentials.moduleKeys';
 import { CredentialsService } from '../../credentials/services/credentials.service';
+import { DefaultModelProvider } from '../../modelProvider/services/defaultModelProvider.service';
 import { AuthTestDatabaseProviderModule } from '../auth/modules/authTestDatabaseProvider.module';
 import { CredentialsMock } from '../credentialsStorage/models/app/credentials.mock';
 import { jwtConfigMock } from '../jwt/models/jwtConfig.mock';
@@ -20,10 +21,10 @@ describe('CredentialsRefresh', () => {
         AuthTestDatabaseProviderModule,
         AuthModule.withConfiguration({
           jwtConfig: jwtConfigMock,
-          models: {
+          modelProvider: DefaultModelProvider.withModels({
             credentials: CredentialsMock,
             user: UserMock
-          },
+          }),
           methods: [SignInEmailPassword.forRoot()]
         })
       ]

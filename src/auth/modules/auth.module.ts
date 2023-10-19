@@ -1,7 +1,6 @@
 import { DynamicModule, MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { APP_GUARD } from '@nestjs/core';
 import { EventEmitterModule } from '@nestjs/event-emitter';
-import { ClassConstructor } from 'class-transformer';
 import { AuthenticatorsModule } from '../../authenticator/modules/authenticators.module';
 import { AuthenticatorBundle } from '../../authenticatorBundle/services/authenticatorBundle';
 import { AnyCredentialsRepresentation } from '../../credentials/models/types/anyCredentialsRepresentation';
@@ -9,6 +8,8 @@ import { CredentialsModule } from '../../credentials/modules/credentials.module'
 import { CredentialsRefreshModule } from '../../credentialsRefresh/modules/credentialsRefresh.module';
 import { JWTConfig } from '../../jwt/models/types/jwtConfig';
 import { JWTModule } from '../../jwt/modules/jwt.module';
+import { ModelProviderModule } from '../../modelProvider/modules/modelProvider.module';
+import { ModelProvider } from '../../modelProvider/services/modelProvider';
 import { AnyUserRepresentation } from '../../user/models/types/anyUserRepresentation';
 import { UserModule } from '../../user/modules/user.module';
 import { JwtAuthGuard } from '../guards/jwtAuth.guard';
@@ -22,10 +23,7 @@ export class AuthModule implements NestModule {
     User extends AnyUserRepresentation
   >(config: {
     jwtConfig: JWTConfig;
-    models: {
-      credentials: ClassConstructor<Credentials>;
-      user: ClassConstructor<User>;
-    };
+    modelProvider: ModelProvider<Credentials, User>;
     methods: AuthenticatorBundle<any, User>[];
   }): DynamicModule {
     return {
@@ -36,9 +34,10 @@ export class AuthModule implements NestModule {
           delimiter: '.'
         }),
         JWTModule.withConfig(config.jwtConfig),
-        CredentialsModule.withConfiguration({ jwtConfig: config.jwtConfig, model: config.models.credentials }),
+        ModelProviderModule.withProvider(config.modelProvider),
+        CredentialsModule.withConfiguration({ jwtConfig: config.jwtConfig, modelProvider: config.modelProvider }),
         CredentialsRefreshModule.withConfiguration(config),
-        UserModule.withConfiguration({ model: config.models.user }),
+        UserModule.withConfiguration({ modelProvider: config.modelProvider }),
         AuthenticatorsModule.withBundles(config.methods)
       ],
       providers: [JwtStrategy, { provide: APP_GUARD, useClass: JwtAuthGuard }]

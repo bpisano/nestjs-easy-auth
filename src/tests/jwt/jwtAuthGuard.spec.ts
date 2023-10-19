@@ -3,6 +3,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import * as request from 'supertest';
 import { SignInEmailPassword } from '../..';
 import { AuthModule } from '../../auth/modules/auth.module';
+import { DefaultModelProvider } from '../../modelProvider/services/defaultModelProvider.service';
 import { AuthTestDatabaseProviderModule } from '../auth/modules/authTestDatabaseProvider.module';
 import { CredentialsMock } from '../credentialsStorage/models/app/credentials.mock';
 import { UserMock } from '../userStorage/models/app/user.mock';
@@ -25,10 +26,10 @@ describe('JwtAuthGuard', () => {
         AuthTestDatabaseProviderModule,
         AuthModule.withConfiguration({
           jwtConfig: jwtConfigMock,
-          models: {
+          modelProvider: DefaultModelProvider.withModels({
             credentials: CredentialsMock,
             user: UserMock
-          },
+          }),
           methods: [SignInEmailPassword.forRoot()]
         })
       ],
